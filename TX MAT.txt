@@ -1,0 +1,836 @@
+function Tx_mat
+clc; 
+clf; 
+clear; 
+tic;
+ kri1=steano_func;
+kri2=compress(kri1);
+kri3=encrypt(kri2);
+serial_send(kri3);
+toc;
+end
+
+
+function serial_send (lee)
+s=serial('COM3');
+set(s,'BaudRate',9600);
+set(s,'Timeout',10);
+%set(s,'terminator','0');
+set(s,'inputbuffersize',4800012);
+set(s,'requesttosend','off');
+
+[f1,f2]=size(lee)
+s_lee=f1*f2;
+
+r1=mod(f1,255);
+q1=floor(f1/255);
+r2=mod(q1,255);
+q2=floor(q1/255);
+r3=mod(q2,255);
+q3=floor(q2/255);
+
+fab1=data(r1);
+
+fab3=data(r2);
+ fab4=data(q2);
+
+
+
+fopen(s);
+
+s1=size(fab1);
+s3=size(fab3);
+s4=size(fab4);
+
+
+fprintf(s,'%c','J');
+fscanf(s,'%c',1);
+
+for fg=1:1:s1(2)
+fprintf(s,'%c',fab1(fg));
+fscanf(s,'%c',1);
+end
+
+
+for fg=1:1:s3(2)
+fprintf(s,'%c',fab3(fg));
+fscanf(s,'%c',1);
+end
+
+for fg=1:1:s4(2)
+ fprintf(s,'%c',fab4(fg));
+fscanf(s,'%c',1);
+end
+
+
+j6=0;
+for vc=1:1:s_lee
+    d=data(lee(vc));
+    [sd,uy]=size(d);
+    for bn=1:1:uy
+        fprintf(s,'%c',d(bn));
+        fscanf(s,'%c',1);
+        j6=j6+1;
+    end
+end
+disp(j6);
+
+fclose(s);
+delete(s);
+end 
+
+
+
+function steano = steano_func
+o = imread('C:\Users\Kalgal\Desktop\Sten\Ind_Hand_1.jpg');
+[M,N,K]=size(o);
+p=double(o);
+J1=imread('C:\Users\Kalgal\Desktop\Sten\Ram1.png');    
+J1=imresize(J1,[M,N]);
+level=graythresh(J1); 
+J=im2bw(J1,level); 
+J=double(J); 
+K1=imread('C:\Users\Kalgal\Desktop\Sten\va__.jpg'); 
+K1=imresize(K1,[M,N]);
+level=graythresh(K1); 
+K=im2bw(K1,level); 
+K=double(K); 
+L1=imread('C:\Users\Kalgal\Desktop\Sten\b__.jpg'); 
+L1=imresize(L1,[M,N]);
+level=graythresh(L1); 
+L=im2bw(L1,level); 
+L=double(L); 
+subplot(2,2,1); 
+imshow(o); 
+title('Covering Image');
+subplot(2,2,2); 
+imshow(J); 
+title('Image 1 to be steganographed');
+subplot(2,2,3); 
+imshow(K); 
+title('Image 2 to be steganographed');
+subplot(2,2,4); 
+imshow(L); 
+title('Image 3 to be steganographed');
+figure;
+r=p(:,:,1);               
+g=p(:,:,2); 
+b=p(:,:,3); 
+[m,n,k]= size(o);
+msb=128*ones(m,n);  
+plane2=64*ones(m,n); 
+plane3=32*ones(m,n); 
+plane4=16*ones(m,n); 
+plane5=8*ones(m,n); 
+plane6=4*ones(m,n); 
+plane7=2*ones(m,n); 
+lsb=ones(m,n); 
+msb1=bitand(msb,r);  
+plane2_1=bitand(plane2,r); 
+reconstruct=imadd(msb1,plane2_1); 
+plane3_1=bitand(plane3,r); 
+reconstruct=imadd(reconstruct,plane3_1); 
+plane4_1=bitand(plane4,r); 
+reconstruct=imadd(reconstruct,plane4_1); 
+plane5_1=bitand(plane5,r); 
+reconstruct=imadd(reconstruct,plane5_1); 
+plane6_1=bitand(plane6,r); 
+reconstruct=imadd(reconstruct,plane6_1); 
+plane7_1=bitand(plane7,r); 
+reconstruct=imadd(reconstruct,plane7_1); 
+lsb1=J;                                      
+imshow(o);
+ % Reconstructing the message image 
+reconstruct=imadd(reconstruct,lsb1);  
+reconstruct=uint8(reconstruct); 
+r=reconstruct; 
+msb1=bitand(msb,g); % Finding the MSB bits in image  
+plane2_1=bitand(plane2,g); 
+reconstruct=imadd(msb1,plane2_1);   % Combining the planes 
+plane3_1=bitand(plane3,g); 
+reconstruct=imadd(reconstruct,plane3_1); 
+plane4_1=bitand(plane4,g); 
+reconstruct=imadd(reconstruct,plane4_1); 
+plane5_1=bitand(plane5,g); 
+reconstruct=imadd(reconstruct,plane5_1); 
+plane6_1=bitand(plane6,g); 
+reconstruct=imadd(reconstruct,plane6_1); 
+plane7_1=bitand(plane7,g); 
+reconstruct=imadd(reconstruct,plane7_1); 
+% Inserting the message into the LSB 
+lsb1=K;                                      
+% Reconstructing the message image 
+reconstruct=imadd(reconstruct,lsb1);  
+reconstruct=uint8(reconstruct); 
+g=reconstruct; 
+msb1=bitand(msb,b); % Finding the MSB bits in image  
+plane2_1=bitand(plane2,b); 
+reconstruct=imadd(msb1,plane2_1);   % Combining the planes 
+plane3_1=bitand(plane3,b); 
+reconstruct=imadd(reconstruct,plane3_1); 
+plane4_1=bitand(plane4,b); 
+reconstruct=imadd(reconstruct,plane4_1); 
+plane5_1=bitand(plane5,b); 
+reconstruct=imadd(reconstruct,plane5_1); 
+plane6_1=bitand(plane6,b); 
+reconstruct=imadd(reconstruct,plane6_1); 
+plane7_1=bitand(plane7,b); 
+reconstruct=imadd(reconstruct,plane7_1); 
+% Inserting the message into the LSB 
+lsb1=L;                                      
+% Reconstructing the message image 
+reconstruct=imadd(reconstruct,lsb1);  
+reconstruct=uint8(reconstruct); 
+b=reconstruct; 
+total(:,:,1)=r; 
+total(:,:,2)=g; 
+total(:,:,3)=b; 
+steano=total;
+return;
+end
+
+function encrypt=encrypt(total)
+[n,m,k] = size(total);
+  key = keygene(n*m);
+  EncImg = Decrypt_key(total,key);
+  encrypt=EncImg;
+  rey=size(encrypt)
+  encypt = reshape(EncImg, rey(1), rey(2));
+  return;
+end
+
+function z= compress(EncImg)
+frame_size = size(EncImg);
+allpixels = reshape(EncImg, frame_size(1)*frame_size(2), frame_size(3));
+
+%R G B Components
+frame2 = reshape(allpixels, frame_size(1),frame_size(2),frame_size(3));
+poiu=size(frame2);
+z=dzip(frame2);
+
+return;
+end  
+
+function [key] = keygene(n)
+n = n*8;
+bin_x = zeros(n,1,'uint8');
+r = 3.9999998;
+bin_x_N_Minus_1 =  0.300001;
+x_N = 0;
+tic
+for ind = 2 : n
+    x_N = 1 - 2* bin_x_N_Minus_1 * bin_x_N_Minus_1;    
+     if (x_N > 0.0)
+        bin_x(ind-1) = 1;
+    end 
+     bin_x_N_Minus_1 =  x_N;
+     
+end
+toc
+% save bin_sec bin_x;
+t = uint8(0);
+key = zeros(n/8,1,'uint8');
+for ind1 = 1 : n/8
+    
+    for ind2 = 1 : 8
+    key(ind1) = key(ind1) + bin_x(ind2*ind1)* 2 ^ (ind2-1);
+    end
+end
+end
+
+function [proImageOut] = Decrypt_key(ImgInp,key)
+
+[n m k] = size(ImgInp);
+% key =cell2mat(struct2cell( load('key5.mat')));
+% key = keyGen(n*m);
+for ind = 1 : m    
+    Fkey(:,ind) = key((1+(ind-1)*n) : (((ind-1)*n)+n));
+end
+len = n;
+bre = m;
+for ind = 1 : k
+    Img = ImgInp(:,:,ind);
+for ind1 = 1 : len
+    for ind2 = 1 : bre        
+        proImage(ind1,ind2) = bitxor(Img(ind1,ind2),Fkey(ind1,ind2));        
+    end
+end
+proImageOut(:,:,ind) = proImage(:,:,1);
+end
+end
+
+function Z = dzip(M)
+s = size(M);
+c = class(M);
+cn = strmatch(c,{'double','single','logical','char','int8','uint8',...
+    'int16','uint16','int32','uint32','int64','uint64'});
+if cn == 3 | cn == 4
+    M=uint8(M);
+end
+M=typecast(M(:),'uint8');
+M=[uint8(cn);uint8(length(s));typecast(s(:),'uint8');M(:)];
+f=java.io.ByteArrayOutputStream();
+g=java.util.zip.DeflaterOutputStream(f);
+g.write(M);
+g.close;
+Z=typecast(f.toByteArray,'uint8');
+f.close;
+return
+end
+ 
+function de=data(uin)
+switch(uin)
+    case 0
+        de='{} ';
+	case 1
+	      de='z1 ';
+	case 2
+	      de='z2 ';
+	case 3
+	      de='z3 ';
+	case 4
+	      de='z4 ';
+	case 5
+	      de='z5 ';
+	case 6
+	      de='z6 ';
+	case 7
+	      de='z7 ';
+	case 8
+	      de='z8 ';
+	case 9
+	      de='z9 ';
+
+	
+	case 10
+	      de='a ';
+	case 11
+	      de='b ';
+	case 12
+	      de='c ';
+	case 13
+	      de='d ';
+	case 14
+	      de='e ';
+	case 15
+	      de='f ';
+	case 16
+	      de='g ';
+	case 17
+	      de='h ';
+	case 18
+	      de='i ';
+	case 19
+	      de='j ';
+	case 20
+	      de='k ';
+	case 21
+	      de='l ';
+	case 22
+	      de='m ';
+	case 23
+	      de='n ';
+	case 24
+	      de='o ';
+	case 25
+	      de='p ';
+	case 26
+	      de='q ';
+	case 27
+	      de='r ';
+	case 28
+	      de='s ';
+	case 29
+	      de='t ';
+	case 30
+	      de='u ';
+	case 31
+	      de='v ';
+	case 32
+	      de='w ';
+	case 33
+	      de='x ';
+	case 34
+	      de='y ';
+	case 35
+	      de='z ';
+
+
+	case 36
+	      de='A ';
+	case 37
+	      de='B ';
+	case 38
+	      de='C ';
+	case 39
+	      de='D ';
+	case 40
+	      de='E ';
+	case 41
+	      de='F ';
+	case 42
+	      de='G ';
+	case 43
+	      de='H ';
+	case 44
+	      de='I ';
+	case 45
+	      de='J ';
+	case 46
+	      de='K ';
+	case 47
+	      de='L ';
+	case 48
+	      de='M ';
+	case 49
+	      de='N ';
+	case 50
+	      de='O ';
+	case 51
+	      de='P ';
+	case 52
+	      de='Q ';
+	case 53
+	      de='R ';
+	case 54
+	      de='S ';
+	case 55
+	      de='T ';
+	case 56
+	      de='U ';
+	case 57
+	      de='V ';
+	case 58
+	      de='W ';
+	case 59
+	      de='X ';
+	case 60
+	      de='Y ';
+	case 61
+	      de='Z ';
+
+	
+
+
+	case 62
+	      de='! ';
+	case 63
+	      de='@ ';
+	case 64
+	      de='# ';
+	case 65
+	      de='$ ';
+	case 66
+	      de='% ';
+	case 67
+	      de='^ ';
+	case 68
+	      de='& ';
+	case 69
+	      de='* ';
+	case 70
+	      de='( ';
+	case 71
+	      de=') ';
+	case 72
+	      de='~ ';
+	case 73
+	      de='` ';
+	case 74
+	      de='_ ';
+	case 75
+	      de='- ';
+	case 76
+	      de='+ ';
+	case 77
+	      de='= ';
+	case 78
+	      de='{ ';
+	case 79
+	      de='[ ';
+	case 80
+	      de='} ';
+	case 81
+	      de='] ';
+	case 82
+	      de='| ';
+	case 83
+	      de='\ ';
+	case 84
+	      de=': ';
+	case 85
+	      de='; ';
+	case 86
+	      de='" ';
+	case 87
+	      de='<> ';
+	case 88
+	      de='< ';
+	case 89
+	      de=', ';
+	case 90
+	      de='> ';
+	case 91
+	      de='. ';
+	case 92
+	      de='? ';
+	case 93
+	      de='/ ';
+
+
+	case 94
+	      de='a1 ';
+	case 95
+	      de='a2 ';
+	case 96
+	      de='a3 ';
+	case 97
+	      de='a4 ';
+	case 98
+	      de='a5 ';
+	case 99
+	      de='a6 ';
+	case 100
+	      de='a7 ';
+	case 101
+	      de='a8 ';
+	case 102
+	      de='a9 ';
+	case 103
+	      de='b1 ';
+	case 104
+	      de='b2 ';
+	case 105
+	      de='b3 ';
+	
+	case 106
+	      de='b4 ';
+	case 107
+	      de='b5 ';
+	case 108
+	      de='b6 ';
+	case 109
+	      de='b7 ';
+	case 110
+	      de='b8 ';
+	case 111
+	      de='b9 ';
+
+	case 112
+	      de='c1 ';
+
+	case 113
+	      de='c2 ';
+	case 114
+	      de='c3 ';
+	case 115
+	      de='c4 ';
+	case 116
+	      de='c5 ';
+	case 117
+	      de='c6 ';
+	case 118
+	      de='c7 ';
+	case 119
+	      de='c8 ';
+	case 120
+	      de='c9 ';
+	case 121
+	      de='d1 ';
+	case 122
+	      de='d2 ';
+	case 123
+	      de='d3 ';
+	case 124
+	      de='d4 ';
+	case 125
+	      de='d5 ';
+	case 126
+	      de='d6 ';
+	case 127
+	      de='d7 ';
+	case 128
+	      de='d8 ';
+	case 129
+	      de='d9 ';
+	case 130
+	      de='e1 ';
+	case 131
+	      de='e2 ';
+	case 132
+	      de='e3 ';
+	case 133
+	      de='e4 ';
+	case 134
+	      de='e5 ';
+	case 135
+	      de='e6 ';
+	case 136
+	      de='e7 ';
+	case 137
+	      de='e8 ';
+	case 138
+	      de='e9 ';
+	
+
+	case 139
+	      de='f1 ';	
+
+	case 140
+	      de='f2 ';
+	case 141
+	      de='f3 ';
+	case 142
+	      de='f4 ';	
+
+	case 143
+	      de='f5 ';
+	case 144
+	      de='f6 ';	
+
+	case 145
+	      de='f7 ';	
+
+	case 146
+	      de='f8 ';	
+
+	case 147
+	      de='f9 ';	
+
+	case 148
+	      de='g1 ';	
+
+	case 149
+	      de='g2 ';	
+
+	case 150
+	      de='g3 ';	
+
+	case 151
+	      de='g4 ';	
+
+	case 152
+	      de='g5 ';	
+
+	case 153
+	      de='g6 ';	
+
+	case 154
+	      de='g7 ';	
+
+	case 155
+	      de='g8 ';	
+
+	case 156
+	      de='g9 ';	
+
+	case 157
+	      de='h1 ';	
+	case 158
+	      de='h2 ';	
+	case 159
+	      de='h3 ';	
+	case 160
+	      de='h4 ';	
+	case 161
+	      de='h5 ';	
+	case 162
+	      de='h6 ';	
+	case 163
+	      de='h7 ';	
+	case 164
+	      de='h8 ';	
+	case 165
+	      de='h9 ';	
+	case 166
+	      de='i1 ';	
+	case 167
+	      de='i2 ';	
+	case 168
+	      de='i3 ';	
+	case 169
+	      de='i4 ';	
+	case 170
+	      de='i5 ';	
+	case 171
+	      de='i6 ';	
+	case 172
+	      de='i7 ';	
+	case 173
+	      de='i8 ';
+	case 174
+	      de='i9 ';
+
+	case 175
+	      de='j1 ';	
+	case 176
+	      de='j2 ';	
+	case 177
+	      de='j3 ';	
+	case 178
+	      de='j4 ';	
+	case 179
+	      de='j5 ';	
+	case 180
+	      de='j6 ';	
+	case 181
+	      de='j7 ';	
+	case 182
+	      de='j8 ';	
+	case 183
+	      de='j9 ';	
+	case 184
+	      de='k1 ';	
+	
+	case 185
+	      de='k2 ';
+
+	case 186
+	      de='k3 ';	
+	case 187
+	      de='k4 ';	
+	case 188
+	      de='k5 ';	
+	case 189
+	      de='k6 ';	
+	case 190
+	      de='k7 ';	
+	case 191
+	      de='k8 ';	
+	case 192
+	      de='k9 ';	
+	case 193
+	      de='l1 ';	
+	case 194
+	      de='l2 ';	
+	case 195
+	      de='l3 ';	
+	
+	case 196
+	      de='l4 ';	
+	case 197
+	      de='l5 ';	
+	case 198
+	      de='l6 ';	
+	case 199
+	      de='l7 ';	
+	case 200
+	      de='l8 ';	
+	
+	case 201
+	      de='l9 ';	
+	case 202
+	      de='m1 ';
+	case 203
+	      de='m2 ';	
+	case 204
+	      de='m3 ';	
+	
+	case 205
+	      de='m4 ';	
+	case 206
+	      de='m5 ';	
+	case 207
+	      de='m6 ';	
+	case 208
+	      de='m7 ';	
+	case 209
+	      de='m8 ';	
+	case 210
+	      de='m9 ';	
+	case 211
+	      de='n1 ';	
+	case 212
+	      de='n2 ';	
+	case 213
+	      de='n3 ';	
+	case 214
+	      de='n4 ';	
+	case 215
+	      de='n5 ';	
+	case 216
+	      de='n6 ';	
+	case 217
+	      de='n7 ';	
+	case 218
+	      de='n8 ';	
+	case 219
+	      de='n9 ';	
+	case 220
+	      de='o1 ';	
+	case 221
+	      de='o2 ';	
+	case 222
+	      de='o3 ';	
+	case 223
+	      de='o4 ';	
+	case 224
+	      de='o5 ';	
+	case 225
+	      de='o6 ';	
+	case 226
+	      de='o7 ';	
+	case 227
+	      de='o8 ';	
+	case 228
+	      de='o9 ';	
+	case 229
+	      de='p1 ';	
+	case 230
+	      de='p2 ';	
+	case 231
+	      de='p3 ';	
+	case 232
+	      de='p4 ';	
+	case 233
+	      de='p5 ';	
+	case 234
+	      de='p6 ';	
+	case 235
+	      de='p7 ';	
+	case 236
+	      de='p8 ';	
+	case 237
+	      de='p9 ';	
+	case 238
+	      de='q1 ';	
+	case 239
+	      de='q2 ';	
+	case 240
+	      de='q3 ';	
+	case 241
+	      de='q4 ';	
+	case 242
+	      de='q5 ';	
+	case 243
+	      de='q6 ';	
+	case 244
+	      de='q7 ';	
+	case 245
+	      de='q8 ';	
+	case 246
+	      de='q9 ';	
+	case 247
+	      de='r1 ';
+	case 248
+	      de='r2 ';
+	case 249
+	      de='r3 ';
+	case 250
+	      de='r4 ';
+	case 251
+	      de='r5 ';
+	case 252
+	      de='r6 ';
+	case 253
+	      de='r7 ';
+	case 254
+	      de='r8 ';
+	case 255
+	      de='r9 ';
+
+	otherwise
+	;
+end	
+	return;
+end

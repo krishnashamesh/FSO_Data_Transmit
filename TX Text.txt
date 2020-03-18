@@ -1,0 +1,40 @@
+function tx_text()
+tic;
+Fil=fopen('Text.txt','r');
+
+kri4=fscanf(Fil,'%c');
+
+fclose(Fil);
+
+
+serial1(kri4);
+
+toc;
+end
+
+   function serial1(yt)
+s=serial('COM3');
+                                    
+set(s,'BaudRate',9600);
+set(s,'timeout',2);
+
+%set(s,'terminator','0');
+set(s,'inputbuffersize',480012);
+set(s,'requesttosend','off');
+fopen(s);
+fprintf(s,'%c','J');
+    fscanf(s,'%c',1);
+fprintf(s,'%c','~');
+    fscanf(s,'%c',1);
+    
+    [b,c]=size(yt)
+    disp(yt);
+for i=1:1:c
+    fprintf(s,'%c',yt(i))
+    fscanf(s,'%c',1);
+end
+fprintf(s,'%c','~');
+    fscanf(s,'%c',1);
+fclose(s);
+delete(s);
+end

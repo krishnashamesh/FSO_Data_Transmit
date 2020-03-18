@@ -1,0 +1,90 @@
+#include <reg51.h>
+sbit s0=P2^0;
+sbit s1=P2^1;
+sbit s2=P2^2;
+sbit s3=P2^3;
+sbit s4=P2^4;
+sbit s5=P2^5;
+sbit s6=P2^6;
+sbit s7=P2^7;
+sbit muxen=P0^0;
+sbit ctren=P0^1;
+sbit ack=P0^2;
+void main()
+{
+unsigned int i=0,j,r1,r2,p;//l;
+unsigned char mybyte[]={'R'};
+unsigned char ch={0x00};
+while(1)
+{	
+     
+	muxen=1;
+	ctren=1;
+	P2=0x00;
+ 	TMOD=0x20;
+	TH1=0xfd;
+	SCON=0x50;
+	TR1=1;
+
+while(RI==0)
+		{
+		ch=SBUF;		
+ 		}
+		RI=0;	
+        P2=ch;
+		ch=0x00;
+TMOD=0x01;
+ TH0=0;
+ TL0=0;
+
+for(j=0;j<4;j++)
+{	 
+muxen=0;
+ctren=0;
+  {
+   TH0=0xFF;
+   TL0=0x7E;
+   TR0=1;
+   while(TF0==0);
+   TF0=0;
+   TR0=0;
+   }
+
+muxen=1;
+ctren=1;
+r1=s0;
+r2=s1;
+s0=s2;
+s1=s3;
+s2=s4;
+s3=s5;
+s4=s6;
+s5=s7;
+s6=r1;
+s7=r2;
+
+for(p=0;p<5;p++)
+  {
+   TH0=0xFF;	//63693	   2ms delay
+   TL0=0xFE;///for old change from 0x05 to 0x00 
+   TR0=1;
+   while(TF0==0);		
+   TF0=0;
+   TR0=0;
+   }
+
+}
+muxen=1;
+ctren=1;
+
+    TMOD=0x20;
+	TH1=0xfd;
+	SCON=0x50;
+	TR1=1;
+	
+ SBUF=mybyte[0]; 
+ while(TI==0);
+ TI=0;
+	
+ }
+}

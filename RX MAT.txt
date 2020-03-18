@@ -1,0 +1,765 @@
+%% Main Receiver function for Receiving Images
+function Rx_mat
+% Rx_mat - function that is used to receive image
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+clc;
+clf;
+clear;
+tic;
+chan=serial_rec();
+kri5=decrypt(chan);
+rew=decomp(kri5);
+recover(rew);
+toc;
+end
+
+%% Function for serial receive of data
+function chan=serial_rec()
+% chan = serial_rec() - function that is used for serial receive 
+%                       of data
+
+% VARIABLES:
+% chan= Received image
+
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+s=serial('COM15');
+set(s,'BaudRate',9600);
+set(s,'Timeout',10);
+set(s,'terminator',' ');
+set(s,'inputbuffersize',480012);
+set(s,'requesttosend','off');
+fopen(s);
+tr=fscanf(s,'%c',1);
+r1=fscanf(s,'%s');
+r2=fscanf(s,'%s');
+q2=fscanf(s,'%s');
+
+nr1=data1(r1);
+nr2=data1(r2);
+nq2=data1(q2);
+
+nor=(((nq2*255)+nr2)*255)+nr1;
+
+for gf=1:1:nor
+    rfg=fscanf(s,'%s');
+    chan(gf)=data1(rfg);
+end
+fclose(s);
+delete(s);
+return;
+end
+
+%% Database for decoding the encoded Pixels
+function ft=data1(str)
+
+% ft = data1(str) - function that is used to decode the received pixels
+
+% VARIABLES:
+% str = Encoded Pixel value input 
+% ft= Decoded value
+
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+switch(str)
+case '{}'
+ft=0;
+case 'z1'
+ft=1;
+case 'z2'
+ft=2;
+case 'z3'
+ft=3;
+case 'z4'
+ft=4;
+case 'z5'
+ft=5;
+case 'z6'
+ft=6;
+case 'z7'
+ft=7;
+case 'z8'
+ft=8;
+case 'z9'
+ft=9;
+case 'a'
+ft=10;
+case 'b'
+ft=11;
+case 'c'
+ft=12;
+case 'd'
+ft=13;
+case 'e'
+ft=14;
+case 'f'
+ft=15;
+case 'g'
+ft=16;
+case 'h'
+ft=17;
+case 'i'
+ft=18;
+case 'j'
+ft=19;
+case 'k'
+ft=20;
+case 'l'
+ft=21;
+case 'm'
+ft=22;
+case 'n'
+ft=23;
+case 'o'
+ft=24;
+case 'p'
+ft=25;
+case 'q'
+ft=26;
+case 'r'
+ft=27;
+case 's'
+ft=28;
+case 't'
+ft=29;
+case 'u'
+ft=30;
+case 'v'
+ft=31;
+case 'w'
+ft=32;
+case 'x'
+ft=33;
+case 'y'
+ft=34;
+case 'z'
+ft=35;
+case 'A'
+ft=36;
+case 'B'
+ft=37;
+case 'C'
+ft=38;
+case 'D'
+ft=39;
+case 'E'
+ft=40;
+case 'F'
+ft=41;
+case 'G'
+ft=42;
+case 'H'
+ft=43;
+case 'I'
+ft=44;
+case 'J'
+ft=45;
+case 'K'
+ft=46;
+case 'L'
+ft=47;
+case 'M'
+ft=48;
+case 'N'
+ft=49;
+case 'O'
+ft=50;
+case 'P'
+ft=51;
+case 'Q'
+ft=52;
+case 'R'
+ft=53;
+case 'S'
+ft=54;
+case 'T'
+ft=55;
+case 'U'
+ft=56;
+case 'V'
+ft=57;
+case 'W'
+ft=58;
+case 'X'
+ft=59;
+case 'Y'
+ft=60;
+case 'Z'
+ft=61;
+case '!'
+ft=62;
+case '@'
+ft=63;
+case '#'
+ft=64;
+case '$'
+ft=65;
+case '%'
+ft=66;
+case '^'
+ft=67;
+case '&'
+ft=68;
+case '*'
+ft=69;
+case '('
+ft=70;
+case ')'
+ft=71;
+case '~'
+ft=72;
+case '`'
+ft=73;
+case '_'
+ft=74;
+case '-'
+ft=75;
+case '+'
+ft=76;
+case '='
+ft=77;
+case '{'
+ft=78;
+case '['
+ft=79;
+case '}'
+ft=80;
+case ']'
+ft=81;
+case '|'
+ft=82;
+case '\'
+ft=83;
+case ':'
+ft=84;
+case ';'
+ft=85;
+case '"'
+ft=86;
+case '<>'
+ft=87;
+case '<'
+ft=88;
+case ','
+ft=89;
+case '>'
+ft=90;
+case '.'
+ft=91;
+case '?'
+ft=92;
+case '/'
+ft=93;
+case 'a1'
+ft=94;
+case 'a2'
+ft=95;
+case 'a3'
+ft=96;
+case 'a4'
+ft=97;
+case 'a5'
+ft=98;
+case 'a6'
+ft=99;
+case 'a7'
+ft=100;
+case 'a8'
+ft=101;
+case 'a9'
+ft=102;
+case 'b1'
+ft=103;
+case 'b2'
+ft=104;
+case 'b3'
+ft=105;
+case 'b4'
+ft=106;
+case 'b5'
+ft=107;
+case 'b6'
+ft=108;
+case 'b7'
+ft=109;
+case 'b8'
+ft=110;
+case 'b9'
+ft=111;
+case 'c1'
+ft=112;
+case 'c2'
+ft=113;
+case 'c3'
+ft=114;
+case 'c4'
+ft=115;
+case 'c5'
+ft=116;
+case 'c6'
+ft=117;
+case 'c7'
+ft=118;
+case 'c8'
+ft=119;
+case 'c9'
+ft=120;
+case 'd1'
+ft=121;
+case 'd2'
+ft=122;
+case 'd3'
+ft=123;
+case 'd4'
+ft=124;
+case 'd5'
+ft=125;
+case 'd6'
+ft=126;
+case 'd7'
+ft=127;
+case 'd8'
+ft=128;
+case 'd9'
+ft=129;
+case 'e1'
+ft=130;
+case 'e2'
+ft=131;
+case 'e3'
+ft=132;
+case 'e4'
+ft=133;
+case 'e5'
+ft=134;
+case 'e6'
+ft=135;
+case 'e7'
+ft=136;
+case 'e8'
+ft=137;
+case 'e9'
+ft=138;
+case 'f1'
+ft=139;
+case 'f2'
+ft=140;
+case 'f3' 
+ft=141;
+case 'f4'
+ft=142;
+case 'f5'
+ft=143;
+case 'f6'
+ft=144;
+case 'f7'
+ft=145;
+case 'f8'
+ft=146;
+case 'f9'
+ft=147;
+case 'g1'
+ft=148;
+case 'g2'
+ft=149;
+case 'g3'
+ft=150;
+case 'g4'
+ft=151;
+case 'g5'
+ft=152;
+case 'g6'
+ft=153;
+case 'g7'
+ft=154;
+case 'g8'
+ft=155;
+case 'g9'
+ft=156;
+case 'h1'
+ft=157;
+case 'h2'
+ft=158;
+case 'h3'
+ft=159;
+case 'h4'
+ft=160;
+case 'h5'
+ft=161;
+case 'h6'
+ft=162;
+case 'h7'
+ft=163;
+case 'h8'
+ft=164;
+case 'h9'
+ft=165;
+case 'i1'
+ft=166;
+case 'i2'
+ft=167;
+case 'i3'
+ft=168;
+case 'i4'
+ft=169;
+case 'i5'
+ft=170;
+case 'i6'
+ft=171;
+case 'i7'
+ft=172;
+case 'i8'
+ft=173;
+case 'i9'
+ft=174;
+case 'j1'
+ft=175;
+case 'j2'
+ft=176;
+case 'j3'
+ft=177;
+case 'j4'
+ft=178;
+case 'j5'
+ft=179;
+case 'j6'
+ft=180;
+case 'j7'
+ft=181;
+case 'j8'
+ft=182;
+case 'j9'
+ft=183;
+case 'k1'
+ft=184;
+case 'k2'
+ft=185;
+case 'k3'
+ft=186;
+case 'k4'
+ft=187;
+case 'k5'
+ft=188;
+case 'k6'
+ft=189;
+case 'k7'
+ft=190;
+case 'k8'
+ft=191;
+case 'k9'
+ft=192;
+case 'l1'
+ft=193;
+case 'l2'
+ft=194;
+case 'l3'
+ft=195;
+case 'l4'
+ft=196;
+case 'l5'
+ft=197;
+case 'l6'
+ft=198;
+case 'l7'
+ft=199;
+case 'l8'
+ft=200;
+case 'l9'
+ft=201;
+case 'm1'
+ft=202;
+case 'm2'
+ft=203;
+case 'm3'
+ft=204;
+case 'm4'
+ft=205;
+case 'm5'
+ft=206;
+case 'm6'
+ft=207;
+case 'm7'
+ft=208;
+case 'm8'
+ft=209;
+case 'm9'
+ft=210;
+case 'n1'
+ft=211;
+case 'n2'
+ft=212;
+case 'n3'
+ft=213;
+case 'n4'
+ft=214;
+case 'n5'
+ft=215;
+case 'n6'
+ft=216;
+case 'n7'
+ft=217;
+case 'n8'
+ft=218;
+case 'n9'
+ft=219;
+case 'o1'
+ft=220;
+case 'o2'
+ft=221;
+case 'o3'
+ft=222;
+case 'o4'
+ft=223;
+case 'o5'
+ft=224;
+case 'o6'
+ft=225;
+case 'o7'
+ft=226;
+case 'o8'
+ft=227;
+case 'o9'
+ft=228;
+case 'p1'
+ft=229;
+case 'p2'
+ft=230;
+case 'p3'
+ft=231;
+case 'p4'
+ft=232;
+case 'p5'
+ft=233;
+case 'p6'
+ft=234;
+case 'p7'
+ft=235;
+case 'p8'
+ft=236;
+case 'p9'
+ft=237;
+case 'q1'
+ft=238;
+case 'q2'
+ft=239;
+case 'q3'
+ft=240;
+case 'q4'
+ft=241;
+case 'q5'
+ft=242;
+case 'q6'
+ft=243;
+case 'q7'
+ft=244;
+case 'q8'
+ft=245;
+case 'q9'
+ft=246;
+case 'r1'
+ft=247;
+case 'r2'
+ft=248;
+case 'r3'
+ft=249;
+case 'r4'
+ft=250;
+case 'r5'
+ft=251;
+case 'r6'
+ft=252;
+case 'r7'
+ft=253;
+case 'r8'
+ft=254;
+case 'r9'
+ft=255;
+otherwise  
+  error(str);
+end
+return;
+
+end
+
+function decomp=decomp(z)
+
+% decomp=decomp(z) - function that is used to decompress the received data
+
+% VARIABLES:
+% z = Compressed array (input) Will be in the form [NaN 1]
+% decomp = Decompressed array (output) Will be in the form [NaN NaN]
+
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+
+frame3=dunzip(z);
+subplot(2,1,1);
+imshow(frame3);
+title('Reconstructed');
+figure;
+decomp=frame3;
+return;
+end
+
+%% Key generation function for encryption
+function [key] = keygene(n)
+
+% [key]=keygene(n) - function that is used to generate the key used for
+%                    encryption and decryption
+
+% VARIABLES:
+% [key] = Key generated
+% n = Size of the Matrix sent
+
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+
+n = n*8;
+bin_x = zeros(n,1,'uint8');
+r = 3.9999998;
+bin_x_N_Minus_1 =  0.300001;
+x_N = 0;
+tic
+for ind = 2 : n
+    x_N = 1 - 2* bin_x_N_Minus_1 * bin_x_N_Minus_1;    
+     if (x_N > 0.0)
+        bin_x(ind-1) = 1;
+    end 
+     bin_x_N_Minus_1 =  x_N;
+     
+end
+toc
+t = uint8(0);
+key = zeros(n/8,1,'uint8');
+for ind1 = 1 : n/8
+    
+    for ind2 = 1 : 8
+    key(ind1) = key(ind1) + bin_x(ind2*ind1)* 2 ^ (ind2-1);
+    end
+end
+end
+
+%% Main function for Decryption of the uncompressed image
+function decrypt=decrypt(decomp)
+
+% decrypt=decrypt(decomp) - Main function that is used to decrypt the
+%                           uncompressed image
+
+% VARIABLES:
+% decomp = Decompressed array (input) 
+% decrypt = Decrypted image (output) 
+
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+
+[m,n,k]=size(decomp); 
+key = keygene(n*m);
+ DecImg = Decrypt_key(decomp,key);
+  decrypt=DecImg;
+  return;
+end
+
+%% Encryption and decryption function
+function [proImageOut] = Decrypt_key(ImgInp,key)
+
+% [proImageOut] = Decrypt_key(ImgInp,key) - function that is used to encrypt/decrypt the
+%                                           uncompressed image
+
+% VARIABLES:
+% ImgInp = Decompressed array (input) 
+% key = Decryption/Encryption Key
+% [proImageOut]= Decrypted image
+
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+
+
+[n m k] = size(ImgInp);
+for ind = 1 : m    
+    Fkey(:,ind) = key((1+(ind-1)*n) : (((ind-1)*n)+n));
+end
+len = n;
+bre = m;
+for ind = 1 : k
+    Img = ImgInp(:,:,ind);
+for ind1 = 1 : len
+    for ind2 = 1 : bre        
+        proImage(ind1,ind2) = bitxor(Img(ind1,ind2),Fkey(ind1,ind2));        
+    end
+end
+proImageOut(:,:,ind) = proImage(:,:,1);
+end
+end
+
+function M = dunzip(Z)
+
+% M = dzip(Z) - Decompression algorithm function 
+
+% VARIABLES:
+% Z = Compressed Image
+% M = Decompressed Image 
+
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+
+import com.mathworks.mlwidgets.io.InterruptibleStreamCopier
+a=java.io.ByteArrayInputStream(Z);
+b=java.util.zip.InflaterInputStream(a);
+isc = InterruptibleStreamCopier.getInterruptibleStreamCopier;
+c = java.io.ByteArrayOutputStream;
+isc.copyStream(b,c);
+Q=typecast(c.toByteArray,'uint8');
+cn = double(Q(1));                                                          % class
+nd = double(Q(2));                                                          % # dims
+s = typecast(Q(3:8*nd+2),'double')';                                        % size
+Q=Q(8*nd+3:end);
+if cn == 3
+    M  = logical(Q);
+elseif cn == 4
+    M = char(Q);
+else
+    ct = {'double','single','logical','char','int8','uint8',...
+        'int16','uint16','int32','uint32','int64','uint64'};
+    M = typecast(Q,ct{cn});
+end
+M=reshape(M,s);
+return
+end
+
+%% Function for recovery of steanographed images
+ function recover(decrypt)
+ 
+% recover(decrypt) -  Function for recovery of steanographed images
+
+% VARIABLES:
+% decrypt = Decrypted Image 
+
+% NOTES: (1) Carefully tested, but no warranty; use at your own risk.
+%        (2) Shamesh Krishna, Mar 2015
+
+total=decrypt;
+% subplot(2,2,1);
+% ci=double(decrypt);
+% imshow(ci)
+[m,n,k]=size(total);
+lsb=ones(m,n);
+r=total(:,:,1);                  
+g=total(:,:,2); 
+b=total(:,:,3); 
+r=double(r); 
+r1=bitand(r,lsb); 
+subplot(2,2,1); 
+imshow(r1); 
+title('Recovered Image 1'); 
+g=double(g); 
+g1=bitand(g,lsb); 
+subplot(2,2,2); 
+imshow(g1); 
+title('Recovered Image 2'); 
+b=double(b); 
+b1=bitand(b,lsb); 
+subplot(2,2,3); 
+imshow(b1);
+title('Recovered Image 3');
+end

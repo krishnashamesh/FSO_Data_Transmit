@@ -1,0 +1,126 @@
+#include<reg51.h>
+sbit p0=P1^0;
+sbit p1=P1^1;
+sbit p2=P1^2;
+sbit p3=P1^3;
+sbit s0=P0^0;
+sbit s1=P0^1;
+sbit s2=P0^2;
+sbit s3=P0^3;
+sbit s4=P0^4;
+sbit s5=P0^5;
+sbit s6=P0^6;
+sbit s7=P0^7;
+sbit ack=P2^0;
+void main()
+{
+unsigned int i,j;
+unsigned char ch; 
+//TMOD=0x51;
+//TH0=0xFC;
+//TL0=0xC4;
+TH1=0;
+TL1=0;
+P1=0x00;
+P0=0x00;
+while(1)
+{
+TMOD=0x51;
+ for(j=0;j<4;j++)
+ { 
+ TR1=1;
+ while(TL1==0x00); 
+     //for(i=0;i<14;i++)	
+   {																			
+TH0=0xFF;
+TL0=0x7E;
+   TR0=1;
+   while(TF0==0);
+   TF0=0;
+   TR0=0;
+   }
+   P1=TL1;
+   TL1=0;
+
+   
+   switch(P1)
+   {
+     case 0x08:
+
+	       s6=1;
+	       s7=1;
+	       if(j<3)
+	{
+	s0=s2;
+	s1=s3;
+    s2=s4;
+    s3=s5;
+    s4=s6;
+    s5=s7; 
+	}
+	break;
+
+   case 0x04:
+        s6=0;
+	  s7=1;
+	  if(j<3)
+	{
+	s0=s2;
+	s1=s3;
+    s2=s4;
+    s3=s5;
+    s4=s6;
+    s5=s7; 
+	}
+	 break;
+
+   case 0x02:
+        s6=1;
+	  s7=0;
+	  if(j<3)
+	{
+	s0=s2;
+	s1=s3;
+    s2=s4;
+    s3=s5;
+    s4=s6;
+    s5=s7; 
+	}
+	  break;
+
+	case 0x01:
+
+		s6=0;
+	  s7=0;
+	  if(j<3)
+	{
+	s0=s2;
+	s1=s3;
+    s2=s4;
+    s3=s5;
+    s4=s6;
+    s5=s7; 
+	}
+	 break;
+	   default :
+           P0=0xFF;
+			break;
+  }
+	     	
+}
+	 ch=P0;
+ TMOD=0x20;
+ TH1=0xfd;
+ SCON=0x50;
+	TR1=1;
+SBUF=ch; 
+while(TI==0);
+TI=0;
+
+TMOD=0x51;
+TH1=0;
+TL1=0;
+P1=0x00;
+P0=0x00;
+}
+}

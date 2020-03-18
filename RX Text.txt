@@ -1,0 +1,22 @@
+%%Function for receiving the text file.
+function rx_text
+j=serial1();
+Fil=fopen('Expro.txt','w');
+fprintf(Fil,'%s',j);
+fclose(Fil);
+end
+
+function csw=serial1()
+s=serial('COM15');
+set(s,'BaudRate',9600);
+set(s,'timeout',5000);
+set(s,'terminator','~');
+set(s,'inputbuffersize',480012);
+set(s,'requesttosend','off');
+fopen(s);
+err=fscanf(s);
+csw=fscanf(s);
+fclose(s);
+delete(s);
+return;
+end
